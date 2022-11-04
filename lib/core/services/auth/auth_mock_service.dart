@@ -4,15 +4,24 @@ import 'dart:math';
 
 import 'package:chat/core/models/chat_user.dart';
 import 'package:chat/core/services/auth/auth_service.dart';
+
 class AuthMockService implements AuthService {
+  static final _defaultUser = ChatUser(
+    id: '1',
+    name: 'Teste',
+    email: 'teste@gmail.com',
+    imageUrl: 'assets/images/avatar.png',
+  );
   // ignore: prefer_final_fields
-  static Map<String, ChatUser> _users = {};
+  static Map<String, ChatUser> _users = {
+    _defaultUser.email: _defaultUser
+  };
   static ChatUser? _currentUser;
   static MultiStreamController<ChatUser?>? _controller;
   static final _userStream = Stream<ChatUser?>.multi((controller) {
     _controller = controller;
     _currentUser = null;
-    controller.add(_currentUser);
+    controller.add(_defaultUser);
   });
 
   @override
