@@ -4,9 +4,8 @@ import 'dart:math';
 
 import 'package:chat/core/models/chat_user.dart';
 import 'package:chat/core/services/auth/auth_service.dart';
-import 'package:flutter/cupertino.dart';
-
 class AuthMockService implements AuthService {
+  // ignore: prefer_final_fields
   static Map<String, ChatUser> _users = {};
   static ChatUser? _currentUser;
   static MultiStreamController<ChatUser?>? _controller;
