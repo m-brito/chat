@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chat/core/models/chat_user.dart';
+import 'package:chat/core/services/auth/auth_mock_service.dart';
 
 abstract class AuthService {
   ChatUser? get currentUser;
@@ -20,4 +21,10 @@ abstract class AuthService {
   );
 
   Future<void> logout();
+
+  // Mesmo sendo abstract e não permitindo instanciar, com o construtor factory retorna uma classe que implementa AuthService
+  factory AuthService() {
+    return AuthMockService();
+    // return AuthFirebaseService();
+  }
 }
