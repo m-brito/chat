@@ -1,4 +1,6 @@
+import 'package:chat/components/message_bubble.dart';
 import 'package:chat/core/models/chat_message.dart';
+import 'package:chat/core/services/auth/auth_service.dart';
 import 'package:chat/core/services/chat/chat_service.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +9,7 @@ class Messages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = AuthService().currentUser;
     return StreamBuilder<List<ChatMessage>>(
       builder: (ctx, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -17,7 +20,11 @@ class Messages extends StatelessWidget {
           final msgs = snapshot.data!;
           return ListView.builder(
             reverse: true,
-            itemBuilder: (ctx, index) => Text(msgs[index].text),
+            itemBuilder: (ctx, index) => MessageBubble(
+              key: ValueKey(msgs[index].id),
+              message: msgs[index],
+              belongsToCurrentUser: currentUser?.id == msgs[index].userId,
+            ),
             itemCount: msgs.length,
           );
         }

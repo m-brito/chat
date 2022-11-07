@@ -7,9 +7,9 @@ import 'package:chat/core/services/auth/auth_service.dart';
 
 class AuthMockService implements AuthService {
   static final _defaultUser = ChatUser(
-    id: '1',
-    name: 'Teste',
-    email: 'teste@gmail.com',
+    id: '456',
+    name: 'Ana',
+    email: 'ana@gmail.com',
     imageUrl: 'assets/images/avatar.png',
   );
   // ignore: prefer_final_fields
@@ -20,8 +20,7 @@ class AuthMockService implements AuthService {
   static MultiStreamController<ChatUser?>? _controller;
   static final _userStream = Stream<ChatUser?>.multi((controller) {
     _controller = controller;
-    _currentUser = null;
-    controller.add(_defaultUser);
+    _updateUser(_defaultUser);
   });
 
   @override
