@@ -26,7 +26,7 @@ class ChatMockService implements ChatService {
     ),
     ChatMessage(
       id: '3',
-      text: 'Sim',
+      text: 'Sim, pode ser agora!',
       createdAt: DateTime.now(),
       userId: '123',
       userName: 'Bia',
