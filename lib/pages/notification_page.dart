@@ -10,16 +10,17 @@ class NotificationPage extends StatelessWidget {
     final service = Provider.of<ChatNotificationService>(context);
     final items = service.items;
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Minhas Notificações'),
+      appBar: AppBar(
+        title: const Text('Minhas Notificações'),
+      ),
+      body: ListView.builder(
+        itemBuilder: (ctx, i) => ListTile(
+          title: Text(items[i].title),
+          subtitle: Text(items[i].body),
+          onLongPress: () => service.remove(i),
         ),
-        body: ListView.builder(
-          itemBuilder: (ctx, i) => ListTile(
-            title: Text(items[i].title),
-            subtitle: Text(items[i].body),
-            onTap: () => service.remove(i),
-          ),
-          itemCount: service.itemsCount,
-        ));
+        itemCount: service.itemsCount,
+      ),
+    );
   }
 }

@@ -1,0 +1,12 @@
+{
+    "name": "Custom Theme",
+    "visualStyles": {
+        "*": {
+            "*": {
+                "*": {
+                    "fontFamily": "Gotham"
+                }
+            }
+        }
+    }
+}
