@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:chat/components/messages.dart';
 import 'package:chat/components/new_message.dart';
+import 'package:chat/core/models/chat_notification.dart';
 import 'package:chat/core/services/auth/auth_mock_service.dart';
 import 'package:chat/core/services/auth/auth_service.dart';
 import 'package:chat/core/services/notification/chat_notification_service.dart';
@@ -73,12 +76,24 @@ class ChatPage extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-          child: Column(
-        children: const [
-          Expanded(child: Messages()),
-          NewMessage(),
-        ],
-      )),
+        child: Column(
+          children: const [
+            Expanded(child: Messages()),
+            NewMessage(),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () {
+          Provider.of<ChatNotificationService>(context, listen: false).add(
+            ChatNotification(
+              title: 'Mais uma notificação',
+              body: Random().nextDouble().toString(),
+            ),
+          );
+        },
+      ),
     );
   }
 }
