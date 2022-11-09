@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "205437956918",
+    "project_id": "chat-90e88",
+    "storage_bucket": "chat-90e88.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:205437956918:android:702ed2f1d9371bddb9b997",
+        "android_client_info": {
+          "package_name": "br.com.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "205437956918-i02k8nob81q6s5kbdne1nr111c35rkad.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbycZdSNW9-2vpLRNuiHeZ-WsQ27mmdo0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "205437956918-i02k8nob81q6s5kbdne1nr111c35rkad.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
