@@ -54,7 +54,7 @@ class AuthFirebaseService implements AuthService {
     await credential.user?.updatePhotoURL(imageUrl);
 
     // 3. Salvar usuario no banco de dados(opcional)
-    await _saveChatUser(_toChatUser(credential.user!));
+    await _saveChatUser(_toChatUser(credential.user!, imageUrl));
   }
 
   @override
@@ -86,12 +86,12 @@ class AuthFirebaseService implements AuthService {
     });
   }
 
-  static ChatUser _toChatUser(User user) {
+  static ChatUser _toChatUser(User user, [String? imageURL]) {
     return ChatUser(
       id: user.uid,
       name: user.displayName ?? user.email!.split('@')[0],
       email: user.email!,
-      imageUrl: user.photoURL ?? 'assets/images/avatar.png',
+      imageUrl: imageURL ?? user.photoURL ?? 'assets/images/avatar.png',
     );
   }
 
