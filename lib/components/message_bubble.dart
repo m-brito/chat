@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:chat/core/models/chat_message.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class MessageBubble extends StatelessWidget {
   static const _defaultImage = 'assets/images/avatar.png';
@@ -64,11 +65,26 @@ class MessageBubble extends StatelessWidget {
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message.userName,
-                    style: TextStyle(
-                      color: belongsToCurrentUser ? Colors.black : Colors.white,
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: belongsToCurrentUser ? const EdgeInsets.only(left: 10) : const EdgeInsets.only(right: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          message.userName,
+                          style: TextStyle(
+                            color: belongsToCurrentUser ? Colors.black : Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          DateFormat('hh:mm').format(message.createdAt),
+                          style: TextStyle(
+                            color: belongsToCurrentUser ? Colors.black : Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Text(
