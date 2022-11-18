@@ -7,6 +7,7 @@ abstract class ChatService {
   Stream<List<ChatMessage>> messagesStream();
 
   Future<ChatMessage?> save(String text, ChatUser user);
+  Future<dynamic> delete(String id);
 
   factory ChatService() {
     // return ChatMockService();

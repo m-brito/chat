@@ -57,4 +57,8 @@ class ChatMockService implements ChatService {
     _controller?.add(_msgs.reversed.toList());
     return newMessage;
   }
+  @override
+  Future<void> delete(String id) async {
+    _msgs.remove(_msgs.where((msg) => msg.id == id));
+  }
 }

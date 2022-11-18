@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:chat/core/models/chat_message.dart';
 import 'package:chat/core/models/chat_user.dart';
 import 'package:chat/core/services/chat/chat_service.dart';
+import 'package:chat/exceptions/http_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatFirebaseService implements ChatService {
@@ -56,6 +57,17 @@ class ChatFirebaseService implements ChatService {
 
     final doc = await docRef.get();
     return doc.data()!;
+  }
+
+  @override
+  Future<dynamic> delete(id) async {
+    final store = FirebaseFirestore.instance;
+    try{
+      final resp = await store.collection('chat').doc(id).delete();
+      return 'Mensagem deletada';
+    }catch(error) {
+      throw HttpException(msg: 'Erro ao deletar mensagem');
+    }
   }
 
   // ChatMessage => Map<String, dynamic>
