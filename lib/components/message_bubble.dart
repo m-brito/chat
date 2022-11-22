@@ -46,7 +46,11 @@ class MessageBubble extends StatelessWidget {
             Container(
               margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
               // padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              // width: ((message.text.characters.length * 80) < 180) ? message.text.characters.length * 50 : 180,
               width: 180,
+              // constraints: BoxConstraints(
+              //   maxWidth: MediaQuery.of(context).size.width * 0.8
+              // ),
               child: Material(
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(12),
@@ -142,7 +146,7 @@ class MessageBubble extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                DateFormat('hh:mm').format(message.createdAt),
+                                DateFormat('HH:mm').format(message.createdAt),
                                 style: TextStyle(
                                   color: belongsToCurrentUser
                                       ? Colors.black
