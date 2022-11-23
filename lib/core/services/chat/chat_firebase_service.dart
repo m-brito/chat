@@ -35,7 +35,7 @@ class ChatFirebaseService implements ChatService {
   }
 
   @override
-  Future<ChatMessage?> save(String text, ChatUser user) async {
+  Future<ChatMessage?> save(String text, TypeMessage type, ChatUser user) async {
     final store = FirebaseFirestore.instance;
 
     final msg = ChatMessage(
@@ -45,6 +45,7 @@ class ChatFirebaseService implements ChatService {
       userId: user.id,
       userName: user.name,
       userImageUrl: user.imageUrl,
+      type: type,
     );
 
     final docRef = await store
@@ -81,6 +82,7 @@ class ChatFirebaseService implements ChatService {
       'userId': msg.userId,
       'userName': msg.userName,
       'userImageUrl': msg.userImageUrl,
+      'type': ChatMessage.typeMessageToString(msg.type),
     };
   }
 
@@ -89,6 +91,7 @@ class ChatFirebaseService implements ChatService {
     DocumentSnapshot<Map<String, dynamic>> doc,
     SnapshotOptions? options,
   ) {
+    print('type ${doc["type"]}, ${doc["text"]}, ${TypeMessage.Text}');
     return ChatMessage(
       id: doc.id,
       text: doc['text'],
@@ -96,6 +99,7 @@ class ChatFirebaseService implements ChatService {
       userId: doc['userId'],
       userName: doc['userName'],
       userImageUrl: doc['userImageUrl'],
+      type: ChatMessage.stringToTypeMessage(doc['type']),
     );
   }
 }

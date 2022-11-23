@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:chat/core/models/chat_user.dart';
 import 'package:chat/core/models/chat_message.dart';
+import 'package:chat/core/services/chat/chat_firebase_service.dart';
 import 'package:chat/core/services/chat/chat_service.dart';
 
 class ChatMockService implements ChatService {
@@ -44,7 +45,7 @@ class ChatMockService implements ChatService {
   }
 
   @override
-  Future<ChatMessage> save(String text, ChatUser user) async {
+  Future<ChatMessage> save(String text, TypeMessage type, ChatUser user) async {
     final newMessage = ChatMessage(
       id: Random().nextDouble().toString(),
       text: text,
@@ -52,6 +53,7 @@ class ChatMockService implements ChatService {
       userId: user.id,
       userName: user.name,
       userImageUrl: user.imageUrl,
+      type: type,
     );
     _msgs.add(newMessage);
     _controller?.add(_msgs.reversed.toList());
