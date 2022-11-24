@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:chat/core/models/chat_user.dart';
@@ -39,6 +40,8 @@ class ChatMockService implements ChatService {
     controller.add(_msgs);
   });
 
+  Future<String?> uploadChatImage(File? image, String imageName) async {}
+
   @override
   Stream<List<ChatMessage>> messagesStream() {
     return _msgsStream;
@@ -60,7 +63,7 @@ class ChatMockService implements ChatService {
     return newMessage;
   }
   @override
-  Future<void> delete(String id) async {
-    _msgs.remove(_msgs.where((msg) => msg.id == id));
+  Future<void> delete(ChatMessage message, TypeMessage type) async {
+    _msgs.remove(_msgs.where((msg) => msg.id == message.id));
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:chat/core/models/chat_message.dart';
@@ -102,7 +103,7 @@ class MessageBubble extends StatelessWidget {
                             (value) async {
                               if (value == true) {
                                 try{
-                                  final resp = await ChatService().delete(message.id);
+                                  final resp = await ChatService().delete(message, message.type);
                                   msg.showSnackBar(
                                     SnackBar(
                                       content: Text(resp),
@@ -157,17 +158,20 @@ class MessageBubble extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Text(
-                          message.text,
-                          style: TextStyle(
-                            color: belongsToCurrentUser
-                                ? Colors.black
-                                : Colors.white,
+                        if (message.type == TypeMessage.Text)
+                          Text(
+                            message.text,
+                            style: TextStyle(
+                              color: belongsToCurrentUser
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                            textAlign: belongsToCurrentUser
+                                ? TextAlign.end
+                                : TextAlign.start,
                           ),
-                          textAlign: belongsToCurrentUser
-                              ? TextAlign.end
-                              : TextAlign.start,
-                        ),
+                        if (message.type == TypeMessage.Image)
+                          Image.network(message.text, width: double.infinity, fit: BoxFit.cover,)
                       ],
                     ),
                   ),

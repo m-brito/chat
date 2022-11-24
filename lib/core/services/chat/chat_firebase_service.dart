@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:chat/core/models/chat_message.dart';
 import 'package:chat/core/models/chat_user.dart';
 import 'package:chat/core/services/chat/chat_service.dart';
 import 'package:chat/exceptions/http_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ChatFirebaseService implements ChatService {
   @override
@@ -34,8 +36,18 @@ class ChatFirebaseService implements ChatService {
     // });
   }
 
+  Future<String?> uploadChatImage(File? image, String imageName) async {
+    if (image == null) return null;
+
+    final storage = FirebaseStorage.instance;
+    final imageRef = storage.ref().child('chat_images').child(imageName);
+    await imageRef.putFile(image).whenComplete(() {});
+    return await imageRef.getDownloadURL();
+  }
+
   @override
-  Future<ChatMessage?> save(String text, TypeMessage type, ChatUser user) async {
+  Future<ChatMessage?> save(
+      String text, TypeMessage type, ChatUser user) async {
     final store = FirebaseFirestore.instance;
 
     final msg = ChatMessage(
@@ -61,12 +73,21 @@ class ChatFirebaseService implements ChatService {
   }
 
   @override
-  Future<dynamic> delete(id) async {
+  Future<dynamic> delete(ChatMessage message, TypeMessage type) async {
     final store = FirebaseFirestore.instance;
-    try{
-      final resp = await store.collection('chat').doc(id).delete();
+    try {
+      final resp = await store.collection('chat').doc(message.id).delete();
+      if (type == TypeMessage.Image) {
+        final storage = FirebaseStorage.instance;
+        String filePath =
+            message.text.toString().split('/chat_images%2F')[1].split('?')[0];
+
+        FirebaseStorage.instance.ref().child('chat_images').child(filePath).delete().then((_) {}).catchError((e) {
+          throw HttpException(msg: 'Erro ao deletar imagem');
+        });
+      }
       return 'Mensagem deletada';
-    }catch(error) {
+    } catch (error) {
       throw HttpException(msg: 'Erro ao deletar mensagem');
     }
   }
@@ -91,7 +112,6 @@ class ChatFirebaseService implements ChatService {
     DocumentSnapshot<Map<String, dynamic>> doc,
     SnapshotOptions? options,
   ) {
-    print('type ${doc["type"]}, ${doc["text"]}, ${TypeMessage.Text}');
     return ChatMessage(
       id: doc.id,
       text: doc['text'],
