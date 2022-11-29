@@ -58,6 +58,7 @@ class _MessagesState extends State<Messages> {
   @override
   Widget build(BuildContext context) {
     final currentUser = AuthService().currentUser;
+
     return StreamBuilder<List<ChatMessage>>(
       builder: (ctx, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {

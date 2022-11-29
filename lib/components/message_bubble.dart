@@ -1,12 +1,13 @@
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:chat/core/models/chat_message.dart';
 import 'package:chat/core/services/chat/chat_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class MessageBubble extends StatelessWidget {
+class MessageBubble extends StatefulWidget {
   static const _defaultImage = 'assets/images/avatar.png';
   final ChatMessage message;
   final bool belongsToCurrentUser;
@@ -17,12 +18,21 @@ class MessageBubble extends StatelessWidget {
     required this.belongsToCurrentUser,
   });
 
+  @override
+  State<MessageBubble> createState() => _MessageBubbleState();
+}
+
+class _MessageBubbleState extends State<MessageBubble> {
+  bool _playAudio = false;
+  final recordingPlayer = AssetsAudioPlayer();
+
   Widget _showUserImage(String imageUrl) {
     ImageProvider? provider;
     final uri = Uri.parse(imageUrl);
+    final recordingPlayer = AssetsAudioPlayer();
 
-    if (uri.path.contains(_defaultImage)) {
-      provider = const AssetImage(_defaultImage);
+    if (uri.path.contains(MessageBubble._defaultImage)) {
+      provider = const AssetImage(MessageBubble._defaultImage);
     } else if (uri.scheme.contains('http')) {
       provider = NetworkImage(uri.toString());
     } else {
@@ -34,13 +44,35 @@ class MessageBubble extends StatelessWidget {
     );
   }
 
+  Future<void> _playAudioRecord(url) async {
+    setState(() {
+      _playAudio = true;
+    });
+    recordingPlayer.open(
+      Audio.network(url),
+      autoStart: true,
+      showNotification: true,
+    );
+    recordingPlayer.playerState.listen((event) {
+      if (event.name != 'stop') {
+        setState(() {
+          _playAudio = true;
+        });
+      } else {
+        setState(() {
+          _playAudio = false;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final msg = ScaffoldMessenger.of(context);
     return Stack(
       children: [
         Row(
-          mainAxisAlignment: belongsToCurrentUser
+          mainAxisAlignment: widget.belongsToCurrentUser
               ? MainAxisAlignment.end
               : MainAxisAlignment.start,
           children: [
@@ -56,28 +88,28 @@ class MessageBubble extends StatelessWidget {
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(12),
                   topRight: const Radius.circular(12),
-                  bottomLeft: belongsToCurrentUser
+                  bottomLeft: widget.belongsToCurrentUser
                       ? const Radius.circular(12)
                       : const Radius.circular(0),
-                  bottomRight: belongsToCurrentUser
+                  bottomRight: widget.belongsToCurrentUser
                       ? const Radius.circular(0)
                       : const Radius.circular(12),
                 ),
-                color: belongsToCurrentUser
+                color: widget.belongsToCurrentUser
                     ? Colors.grey.shade300
                     : Theme.of(context).colorScheme.primary,
                 child: InkWell(
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(12),
                     topRight: const Radius.circular(12),
-                    bottomLeft: belongsToCurrentUser
+                    bottomLeft: widget.belongsToCurrentUser
                         ? const Radius.circular(12)
                         : const Radius.circular(0),
-                    bottomRight: belongsToCurrentUser
+                    bottomRight: widget.belongsToCurrentUser
                         ? const Radius.circular(0)
                         : const Radius.circular(12),
                   ),
-                  onLongPress: belongsToCurrentUser
+                  onLongPress: widget.belongsToCurrentUser
                       ? () {
                           showDialog<bool>(
                             context: context,
@@ -103,7 +135,7 @@ class MessageBubble extends StatelessWidget {
                             (value) async {
                               if (value == true) {
                                 try{
-                                  final resp = await ChatService().delete(message, message.type);
+                                  final resp = await ChatService().delete(widget.message, widget.message.type);
                                   msg.showSnackBar(
                                     SnackBar(
                                       content: Text(resp),
@@ -126,30 +158,30 @@ class MessageBubble extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 16),
                     child: Column(
-                      crossAxisAlignment: belongsToCurrentUser
+                      crossAxisAlignment: widget.belongsToCurrentUser
                           ? CrossAxisAlignment.end
                           : CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: belongsToCurrentUser
+                          padding: widget.belongsToCurrentUser
                               ? const EdgeInsets.only(left: 10)
                               : const EdgeInsets.only(right: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                message.userName,
+                                widget.message.userName,
                                 style: TextStyle(
-                                  color: belongsToCurrentUser
+                                  color: widget.belongsToCurrentUser
                                       ? Colors.black
                                       : Colors.white,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                DateFormat('HH:mm').format(message.createdAt),
+                                DateFormat('HH:mm').format(widget.message.createdAt),
                                 style: TextStyle(
-                                  color: belongsToCurrentUser
+                                  color: widget.belongsToCurrentUser
                                       ? Colors.black
                                       : Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -158,20 +190,26 @@ class MessageBubble extends StatelessWidget {
                             ],
                           ),
                         ),
-                        if (message.type == TypeMessage.Text)
+                        if (widget.message.type == TypeMessage.Text)
                           Text(
-                            message.text,
+                            widget.message.text,
                             style: TextStyle(
-                              color: belongsToCurrentUser
+                              color: widget.belongsToCurrentUser
                                   ? Colors.black
                                   : Colors.white,
                             ),
-                            textAlign: belongsToCurrentUser
+                            textAlign: widget.belongsToCurrentUser
                                 ? TextAlign.end
                                 : TextAlign.start,
                           ),
-                        if (message.type == TypeMessage.Image)
-                          Image.network(message.text, width: double.infinity, fit: BoxFit.cover,)
+                        if (widget.message.type == TypeMessage.Image)
+                          Image.network(widget.message.text, width: double.infinity, fit: BoxFit.cover,),
+                        if (widget.message.type == TypeMessage.Audio)
+                          Center(
+                            child: IconButton(onPressed: () async {
+                              await _playAudioRecord(widget.message.text);
+                            }, icon: !_playAudio ? Icon(Icons.play_arrow) : Icon(Icons.pause)),
+                          )
                       ],
                     ),
                   ),
@@ -182,9 +220,9 @@ class MessageBubble extends StatelessWidget {
         ),
         Positioned(
           top: 0,
-          left: belongsToCurrentUser ? null : 165,
-          right: belongsToCurrentUser ? 165 : null,
-          child: _showUserImage(message.userImageUrl),
+          left: widget.belongsToCurrentUser ? null : 165,
+          right: widget.belongsToCurrentUser ? 165 : null,
+          child: _showUserImage(widget.message.userImageUrl),
         ),
       ],
     );

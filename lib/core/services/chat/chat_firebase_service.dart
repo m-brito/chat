@@ -45,6 +45,15 @@ class ChatFirebaseService implements ChatService {
     return await imageRef.getDownloadURL();
   }
 
+  Future<String?> uploadChatAudio(File? audio, String audioName) async {
+    if (audio == null) return null;
+
+    final storage = FirebaseStorage.instance;
+    final imageRef = storage.ref().child('chat_audios').child(audioName);
+    await imageRef.putFile(audio).whenComplete(() {});
+    return await imageRef.getDownloadURL();
+  }
+
   @override
   Future<ChatMessage?> save(
       String text, TypeMessage type, ChatUser user) async {
@@ -77,7 +86,7 @@ class ChatFirebaseService implements ChatService {
     final store = FirebaseFirestore.instance;
     try {
       final resp = await store.collection('chat').doc(message.id).delete();
-      if (type == TypeMessage.Image) {
+      if (type == TypeMessage.Image || type == TypeMessage.Audio) {
         final storage = FirebaseStorage.instance;
         String filePath =
             message.text.toString().split('/chat_images%2F')[1].split('?')[0];
