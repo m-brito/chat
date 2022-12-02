@@ -86,13 +86,22 @@ class ChatFirebaseService implements ChatService {
     final store = FirebaseFirestore.instance;
     try {
       final resp = await store.collection('chat').doc(message.id).delete();
-      if (type == TypeMessage.Image || type == TypeMessage.Audio) {
+      if (type == TypeMessage.Image) {
         final storage = FirebaseStorage.instance;
         String filePath =
             message.text.toString().split('/chat_images%2F')[1].split('?')[0];
 
         FirebaseStorage.instance.ref().child('chat_images').child(filePath).delete().then((_) {}).catchError((e) {
           throw HttpException(msg: 'Erro ao deletar imagem');
+        });
+      }
+      else if (type == TypeMessage.Audio) {
+        final storage = FirebaseStorage.instance;
+        String filePath =
+            message.text.toString().split('/chat_audios%2F')[1].split('?')[0];
+
+        FirebaseStorage.instance.ref().child('chat_audios').child(filePath).delete().then((_) {}).catchError((e) {
+          throw HttpException(msg: 'Erro ao deletar audio');
         });
       }
       return 'Mensagem deletada';
