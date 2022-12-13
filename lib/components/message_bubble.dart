@@ -24,6 +24,7 @@ class MessageBubble extends StatefulWidget {
 
 class _MessageBubbleState extends State<MessageBubble> {
   bool _playAudio = false;
+  bool twoVel = false;
   final recordingPlayer = AssetsAudioPlayer();
 
   Widget _showUserImage(String imageUrl) {
@@ -52,6 +53,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       Audio.network(url),
       autoStart: true,
       showNotification: true,
+      playSpeed: twoVel ? 2 : 1
     );
     recordingPlayer.playerState.listen((event) {
       if (event.name != 'stop') {
@@ -63,6 +65,12 @@ class _MessageBubbleState extends State<MessageBubble> {
           _playAudio = false;
         });
       }
+    });
+  }
+
+  void _alternaVel() {
+    setState(() {
+      twoVel = !twoVel;
     });
   }
 
@@ -134,14 +142,15 @@ class _MessageBubbleState extends State<MessageBubble> {
                           ).then(
                             (value) async {
                               if (value == true) {
-                                try{
-                                  final resp = await ChatService().delete(widget.message, widget.message.type);
+                                try {
+                                  final resp = await ChatService().delete(
+                                      widget.message, widget.message.type);
                                   msg.showSnackBar(
                                     SnackBar(
                                       content: Text(resp),
                                     ),
                                   );
-                                } catch(error) {
+                                } catch (error) {
                                   msg.showSnackBar(
                                     SnackBar(
                                       content: Text(error.toString()),
@@ -179,7 +188,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                                 ),
                               ),
                               Text(
-                                DateFormat('HH:mm').format(widget.message.createdAt),
+                                DateFormat('HH:mm')
+                                    .format(widget.message.createdAt),
                                 style: TextStyle(
                                   color: widget.belongsToCurrentUser
                                       ? Colors.black
@@ -203,12 +213,33 @@ class _MessageBubbleState extends State<MessageBubble> {
                                 : TextAlign.start,
                           ),
                         if (widget.message.type == TypeMessage.Image)
-                          Image.network(widget.message.text, width: double.infinity, fit: BoxFit.cover,),
+                          Image.network(
+                            widget.message.text,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
                         if (widget.message.type == TypeMessage.Audio)
-                          Center(
-                            child: IconButton(onPressed: () async {
-                              await _playAudioRecord(widget.message.text);
-                            }, icon: !_playAudio ? Icon(Icons.play_arrow) : Icon(Icons.pause)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                onPressed: () async {
+                                  await _playAudioRecord(widget.message.text);
+                                },
+                                icon: !_playAudio
+                                    ? const Icon(Icons.play_arrow)
+                                    : const Icon(Icons.pause),
+                              ),
+                              TextButton(
+                                onPressed: _alternaVel,
+                                child: Text(
+                                  twoVel ? '2x' : '1x',
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
                           )
                       ],
                     ),
